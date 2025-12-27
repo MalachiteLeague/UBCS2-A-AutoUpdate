@@ -22,8 +22,8 @@ jobs:
         dotnet-version: '9.0.x'
 
     - name: Publish Single File
-      # Lệnh đóng gói thành 1 file exe duy nhất
-      run: dotnet publish -c Release -r win-x64 -p:PublishSingleFile=true --self-contained true -o ./publish_output
+      # Dấu chấm ở cuối (.) nghĩa là tìm trong thư mục hiện tại và con
+      run: dotnet publish **/*.csproj -c Release -r win-x64 -p:PublishSingleFile=true --self-contained true -o ./publish_output
 
     - name: Create GitHub Release
       uses: softprops/action-gh-release@v1
