@@ -74,19 +74,34 @@
             dataGridViewTextBoxColumn24 = new DataGridViewTextBoxColumn();
             dataGridViewTextBoxColumn25 = new DataGridViewTextBoxColumn();
             tabPage2 = new TabPage();
-            txtSearchSID = new TextBox();
+            cboLine = new ComboBox();
+            radNuocTieu = new RadioButton();
+            dgvInput = new DataGridView();
+            txtCarrier = new TextBox();
+            radPCD = new RadioButton();
+            radXanhDuong = new RadioButton();
+            radXanhLa = new RadioButton();
+            radDo = new RadioButton();
+            radDen = new RadioButton();
+            radKhac = new RadioButton();
+            btnGui = new Button();
+            txtNguoiNhan = new TextBox();
+            txtNguoiGui = new TextBox();
+            dgvGiaoNhan = new DataGridView();
+            txtSearch = new TextBox();
             label3 = new Label();
-            lstResults = new ListBox();
             btnExport = new Button();
-            btnClearAll = new Button();
-            uC_Chat1 = new UC_Chat();
-            groupBox1 = new GroupBox();
-            btnBackToPresent = new Button();
-            btnRestore = new Button();
-            btnLoadHistory = new Button();
-            btnBackupNow = new Button();
-            pnTaskContainer = new Panel();
-            uC_TaskBoard1 = new UC_TaskBoard();
+            dgvSearch = new DataGridView();
+            dgvChatAll = new DataGridView();
+            panel1 = new Panel();
+            txtTaskSID = new TextBox();
+            dgvTask = new DataGridView();
+            cboKhuVuc = new ComboBox();
+            txtChatContent = new TextBox();
+            cboChatTarget = new ComboBox();
+            dgvChatPrivate = new DataGridView();
+            btnChatSend = new Button();
+            btnClearData = new Button();
             tabControl1.SuspendLayout();
             LuuMau.SuspendLayout();
             tabControl2.SuspendLayout();
@@ -104,8 +119,14 @@
             ((System.ComponentModel.ISupportInitialize)DataCTMT3).BeginInit();
             tabPage5.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)DataSHMDT3).BeginInit();
-            groupBox1.SuspendLayout();
-            pnTaskContainer.SuspendLayout();
+            tabPage2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)dgvInput).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)dgvGiaoNhan).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)dgvSearch).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)dgvChatAll).BeginInit();
+            panel1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)dgvTask).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)dgvChatPrivate).BeginInit();
             SuspendLayout();
             // 
             // tabControl1
@@ -560,22 +581,175 @@
             // 
             // tabPage2
             // 
+            tabPage2.Controls.Add(cboLine);
+            tabPage2.Controls.Add(radNuocTieu);
+            tabPage2.Controls.Add(dgvInput);
+            tabPage2.Controls.Add(txtCarrier);
+            tabPage2.Controls.Add(radPCD);
+            tabPage2.Controls.Add(radXanhDuong);
+            tabPage2.Controls.Add(radXanhLa);
+            tabPage2.Controls.Add(radDo);
+            tabPage2.Controls.Add(radDen);
+            tabPage2.Controls.Add(radKhac);
+            tabPage2.Controls.Add(btnGui);
+            tabPage2.Controls.Add(txtNguoiNhan);
+            tabPage2.Controls.Add(txtNguoiGui);
+            tabPage2.Controls.Add(dgvGiaoNhan);
             tabPage2.Location = new Point(4, 24);
             tabPage2.Name = "tabPage2";
             tabPage2.Padding = new Padding(3);
             tabPage2.Size = new Size(667, 465);
             tabPage2.TabIndex = 1;
-            tabPage2.Text = "tabPage2";
+            tabPage2.Text = "Giao Nhận Mẫu";
             tabPage2.UseVisualStyleBackColor = true;
             // 
-            // txtSearchSID
+            // cboLine
             // 
-            txtSearchSID.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            txtSearchSID.Location = new Point(273, 589);
-            txtSearchSID.Name = "txtSearchSID";
-            txtSearchSID.Size = new Size(100, 23);
-            txtSearchSID.TabIndex = 4;
-            txtSearchSID.KeyDown += txtSearchSID_KeyDown;
+            cboLine.FormattingEnabled = true;
+            cboLine.Items.AddRange(new object[] { "T1->T3", "T3->T1" });
+            cboLine.Location = new Point(34, 44);
+            cboLine.Name = "cboLine";
+            cboLine.Size = new Size(91, 23);
+            cboLine.TabIndex = 14;
+            // 
+            // radNuocTieu
+            // 
+            radNuocTieu.AutoSize = true;
+            radNuocTieu.Location = new Point(198, 270);
+            radNuocTieu.Name = "radNuocTieu";
+            radNuocTieu.Size = new Size(77, 19);
+            radNuocTieu.TabIndex = 13;
+            radNuocTieu.TabStop = true;
+            radNuocTieu.Text = "Nước tiểu";
+            radNuocTieu.UseVisualStyleBackColor = true;
+            // 
+            // dgvInput
+            // 
+            dgvInput.AllowUserToResizeColumns = false;
+            dgvInput.AllowUserToResizeRows = false;
+            dgvInput.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dgvInput.Location = new Point(27, 97);
+            dgvInput.Name = "dgvInput";
+            dgvInput.Size = new Size(153, 344);
+            dgvInput.TabIndex = 12;
+            // 
+            // txtCarrier
+            // 
+            txtCarrier.Location = new Point(149, 44);
+            txtCarrier.Name = "txtCarrier";
+            txtCarrier.Size = new Size(89, 23);
+            txtCarrier.TabIndex = 11;
+            txtCarrier.Text = "Carrier";
+            // 
+            // radPCD
+            // 
+            radPCD.AutoSize = true;
+            radPCD.Location = new Point(198, 305);
+            radPCD.Name = "radPCD";
+            radPCD.Size = new Size(48, 19);
+            radPCD.TabIndex = 10;
+            radPCD.TabStop = true;
+            radPCD.Text = "PCĐ";
+            radPCD.UseVisualStyleBackColor = true;
+            // 
+            // radXanhDuong
+            // 
+            radXanhDuong.AutoSize = true;
+            radXanhDuong.Location = new Point(198, 236);
+            radXanhDuong.Name = "radXanhDuong";
+            radXanhDuong.Size = new Size(91, 19);
+            radXanhDuong.TabIndex = 9;
+            radXanhDuong.TabStop = true;
+            radXanhDuong.Text = "Xanh Dương";
+            radXanhDuong.UseVisualStyleBackColor = true;
+            // 
+            // radXanhLa
+            // 
+            radXanhLa.AutoSize = true;
+            radXanhLa.Location = new Point(198, 200);
+            radXanhLa.Name = "radXanhLa";
+            radXanhLa.Size = new Size(67, 19);
+            radXanhLa.TabIndex = 8;
+            radXanhLa.TabStop = true;
+            radXanhLa.Text = "Xanh Lá";
+            radXanhLa.UseVisualStyleBackColor = true;
+            // 
+            // radDo
+            // 
+            radDo.AutoSize = true;
+            radDo.Location = new Point(198, 166);
+            radDo.Name = "radDo";
+            radDo.Size = new Size(40, 19);
+            radDo.TabIndex = 7;
+            radDo.TabStop = true;
+            radDo.Text = "Đỏ";
+            radDo.UseVisualStyleBackColor = true;
+            // 
+            // radDen
+            // 
+            radDen.AutoSize = true;
+            radDen.Location = new Point(198, 132);
+            radDen.Name = "radDen";
+            radDen.Size = new Size(46, 19);
+            radDen.TabIndex = 6;
+            radDen.TabStop = true;
+            radDen.Text = "Đen";
+            radDen.UseVisualStyleBackColor = true;
+            // 
+            // radKhac
+            // 
+            radKhac.AutoSize = true;
+            radKhac.Location = new Point(198, 97);
+            radKhac.Name = "radKhac";
+            radKhac.Size = new Size(51, 19);
+            radKhac.TabIndex = 5;
+            radKhac.TabStop = true;
+            radKhac.Text = "Khác";
+            radKhac.UseVisualStyleBackColor = true;
+            // 
+            // btnGui
+            // 
+            btnGui.Location = new Point(198, 363);
+            btnGui.Name = "btnGui";
+            btnGui.Size = new Size(89, 78);
+            btnGui.TabIndex = 4;
+            btnGui.Text = "Gửi";
+            btnGui.UseVisualStyleBackColor = true;
+            // 
+            // txtNguoiNhan
+            // 
+            txtNguoiNhan.Location = new Point(149, 15);
+            txtNguoiNhan.Name = "txtNguoiNhan";
+            txtNguoiNhan.Size = new Size(89, 23);
+            txtNguoiNhan.TabIndex = 2;
+            txtNguoiNhan.Text = "Người nhận";
+            // 
+            // txtNguoiGui
+            // 
+            txtNguoiGui.Location = new Point(34, 15);
+            txtNguoiGui.Name = "txtNguoiGui";
+            txtNguoiGui.Size = new Size(91, 23);
+            txtNguoiGui.TabIndex = 1;
+            txtNguoiGui.Text = "Người gửi";
+            // 
+            // dgvGiaoNhan
+            // 
+            dgvGiaoNhan.AllowUserToResizeColumns = false;
+            dgvGiaoNhan.AllowUserToResizeRows = false;
+            dgvGiaoNhan.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
+            dgvGiaoNhan.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dgvGiaoNhan.Location = new Point(302, 6);
+            dgvGiaoNhan.Name = "dgvGiaoNhan";
+            dgvGiaoNhan.Size = new Size(359, 453);
+            dgvGiaoNhan.TabIndex = 0;
+            // 
+            // txtSearch
+            // 
+            txtSearch.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            txtSearch.Location = new Point(273, 589);
+            txtSearch.Name = "txtSearch";
+            txtSearch.Size = new Size(100, 23);
+            txtSearch.TabIndex = 4;
             // 
             // label3
             // 
@@ -587,16 +761,6 @@
             label3.TabIndex = 5;
             label3.Text = "Tìm kiếm SID";
             // 
-            // lstResults
-            // 
-            lstResults.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            lstResults.FormattingEnabled = true;
-            lstResults.Location = new Point(405, 518);
-            lstResults.Name = "lstResults";
-            lstResults.Size = new Size(233, 94);
-            lstResults.TabIndex = 6;
-            lstResults.SelectedIndexChanged += lstResults_SelectedIndexChanged;
-            // 
             // btnExport
             // 
             btnExport.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
@@ -606,113 +770,118 @@
             btnExport.TabIndex = 7;
             btnExport.Text = "Xuất dữ liệu";
             btnExport.UseVisualStyleBackColor = true;
-            btnExport.Click += btnExport_Click;
             // 
-            // btnClearAll
+            // dgvSearch
             // 
-            btnClearAll.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            btnClearAll.Location = new Point(242, 22);
-            btnClearAll.Name = "btnClearAll";
-            btnClearAll.Size = new Size(75, 27);
-            btnClearAll.TabIndex = 8;
-            btnClearAll.Text = "Xóa dữ liệu";
-            btnClearAll.UseVisualStyleBackColor = true;
-            btnClearAll.Click += btnClearAll_Click;
+            dgvSearch.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dgvSearch.Location = new Point(390, 512);
+            dgvSearch.Name = "dgvSearch";
+            dgvSearch.Size = new Size(248, 106);
+            dgvSearch.TabIndex = 12;
             // 
-            // uC_Chat1
+            // dgvChatAll
             // 
-            uC_Chat1.Location = new Point(4, 12);
-            uC_Chat1.Name = "uC_Chat1";
-            uC_Chat1.Size = new Size(255, 613);
-            uC_Chat1.TabIndex = 9;
+            dgvChatAll.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dgvChatAll.Location = new Point(12, 204);
+            dgvChatAll.Name = "dgvChatAll";
+            dgvChatAll.Size = new Size(247, 328);
+            dgvChatAll.TabIndex = 13;
             // 
-            // groupBox1
+            // panel1
             // 
-            groupBox1.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            groupBox1.Controls.Add(btnBackToPresent);
-            groupBox1.Controls.Add(btnRestore);
-            groupBox1.Controls.Add(btnLoadHistory);
-            groupBox1.Controls.Add(btnBackupNow);
-            groupBox1.Controls.Add(btnClearAll);
-            groupBox1.Location = new Point(658, 512);
-            groupBox1.Name = "groupBox1";
-            groupBox1.Size = new Size(332, 100);
-            groupBox1.TabIndex = 10;
-            groupBox1.TabStop = false;
-            groupBox1.Text = "Sao lưu và khôi phục";
+            panel1.Controls.Add(txtTaskSID);
+            panel1.Controls.Add(dgvTask);
+            panel1.Location = new Point(946, 49);
+            panel1.Name = "panel1";
+            panel1.Size = new Size(281, 453);
+            panel1.TabIndex = 14;
             // 
-            // btnBackToPresent
+            // txtTaskSID
             // 
-            btnBackToPresent.Location = new Point(181, 66);
-            btnBackToPresent.Name = "btnBackToPresent";
-            btnBackToPresent.Size = new Size(94, 26);
-            btnBackToPresent.TabIndex = 12;
-            btnBackToPresent.Text = "Về Hiện Tại";
-            btnBackToPresent.UseVisualStyleBackColor = true;
-            btnBackToPresent.Click += btnBackToPresent_Click;
+            txtTaskSID.Location = new Point(69, 420);
+            txtTaskSID.Name = "txtTaskSID";
+            txtTaskSID.Size = new Size(151, 23);
+            txtTaskSID.TabIndex = 1;
             // 
-            // btnRestore
+            // dgvTask
             // 
-            btnRestore.Location = new Point(52, 66);
-            btnRestore.Name = "btnRestore";
-            btnRestore.Size = new Size(109, 28);
-            btnRestore.TabIndex = 11;
-            btnRestore.Text = "Khôi Phục";
-            btnRestore.UseVisualStyleBackColor = true;
-            btnRestore.Click += btnRestore_Click;
+            dgvTask.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dgvTask.Location = new Point(3, 3);
+            dgvTask.Name = "dgvTask";
+            dgvTask.Size = new Size(275, 411);
+            dgvTask.TabIndex = 0;
             // 
-            // btnLoadHistory
+            // cboKhuVuc
             // 
-            btnLoadHistory.Location = new Point(116, 22);
-            btnLoadHistory.Name = "btnLoadHistory";
-            btnLoadHistory.Size = new Size(109, 27);
-            btnLoadHistory.TabIndex = 10;
-            btnLoadHistory.Text = "Xem Lịch Sử";
-            btnLoadHistory.UseVisualStyleBackColor = true;
-            btnLoadHistory.Click += btnLoadHistory_Click;
+            cboKhuVuc.FormattingEnabled = true;
+            cboKhuVuc.Items.AddRange(new object[] { "Hành Chánh T1", "Hành Chánh T3", "Huyết học T1", "Sinh hóa T1", "Miễn dịch T1", "Huyết học T3", "SH-MD T3", "Admin", "Khách" });
+            cboKhuVuc.Location = new Point(997, 20);
+            cboKhuVuc.Name = "cboKhuVuc";
+            cboKhuVuc.Size = new Size(205, 23);
+            cboKhuVuc.TabIndex = 15;
             // 
-            // btnBackupNow
+            // txtChatContent
             // 
-            btnBackupNow.Location = new Point(12, 22);
-            btnBackupNow.Name = "btnBackupNow";
-            btnBackupNow.Size = new Size(93, 27);
-            btnBackupNow.TabIndex = 9;
-            btnBackupNow.Text = "Backup Ngay";
-            btnBackupNow.UseVisualStyleBackColor = true;
-            btnBackupNow.Click += btnBackupNow_Click;
+            txtChatContent.Location = new Point(14, 538);
+            txtChatContent.Name = "txtChatContent";
+            txtChatContent.Size = new Size(183, 23);
+            txtChatContent.TabIndex = 16;
             // 
-            // pnTaskContainer
+            // cboChatTarget
             // 
-            pnTaskContainer.Controls.Add(uC_TaskBoard1);
-            pnTaskContainer.Location = new Point(951, 37);
-            pnTaskContainer.Name = "pnTaskContainer";
-            pnTaskContainer.Size = new Size(277, 465);
-            pnTaskContainer.TabIndex = 11;
+            cboChatTarget.FormattingEnabled = true;
+            cboChatTarget.Location = new Point(14, 14);
+            cboChatTarget.Name = "cboChatTarget";
+            cboChatTarget.Size = new Size(245, 23);
+            cboChatTarget.TabIndex = 17;
             // 
-            // uC_TaskBoard1
+            // dgvChatPrivate
             // 
-            uC_TaskBoard1.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Right;
-            uC_TaskBoard1.BackColor = Color.WhiteSmoke;
-            uC_TaskBoard1.Location = new Point(0, 0);
-            uC_TaskBoard1.Name = "uC_TaskBoard1";
-            uC_TaskBoard1.Size = new Size(277, 465);
-            uC_TaskBoard1.TabIndex = 0;
+            dgvChatPrivate.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dgvChatPrivate.Location = new Point(13, 46);
+            dgvChatPrivate.Name = "dgvChatPrivate";
+            dgvChatPrivate.Size = new Size(247, 152);
+            dgvChatPrivate.TabIndex = 18;
+            // 
+            // btnChatSend
+            // 
+            btnChatSend.Location = new Point(203, 538);
+            btnChatSend.Name = "btnChatSend";
+            btnChatSend.Size = new Size(57, 23);
+            btnChatSend.TabIndex = 19;
+            btnChatSend.Text = "Gửi";
+            btnChatSend.UseVisualStyleBackColor = true;
+            // 
+            // btnClearData
+            // 
+            btnClearData.Location = new Point(652, 514);
+            btnClearData.Name = "btnClearData";
+            btnClearData.Size = new Size(121, 44);
+            btnClearData.TabIndex = 20;
+            btnClearData.Text = "Xóa dữ liệu";
+            btnClearData.UseVisualStyleBackColor = true;
             // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1241, 624);
-            Controls.Add(pnTaskContainer);
-            Controls.Add(groupBox1);
-            Controls.Add(uC_Chat1);
+            Controls.Add(btnClearData);
+            Controls.Add(btnChatSend);
+            Controls.Add(dgvChatPrivate);
+            Controls.Add(cboChatTarget);
+            Controls.Add(txtChatContent);
+            Controls.Add(cboKhuVuc);
+            Controls.Add(panel1);
+            Controls.Add(dgvChatAll);
+            Controls.Add(dgvSearch);
             Controls.Add(btnExport);
-            Controls.Add(lstResults);
             Controls.Add(label3);
-            Controls.Add(txtSearchSID);
+            Controls.Add(txtSearch);
             Controls.Add(tabControl1);
             Name = "Form1";
             Text = "Lưu Mẫu";
+            Load += Form1_Load;
             tabControl1.ResumeLayout(false);
             LuuMau.ResumeLayout(false);
             tabControl2.ResumeLayout(false);
@@ -735,8 +904,16 @@
             tabPage5.ResumeLayout(false);
             tabPage5.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)DataSHMDT3).EndInit();
-            groupBox1.ResumeLayout(false);
-            pnTaskContainer.ResumeLayout(false);
+            tabPage2.ResumeLayout(false);
+            tabPage2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)dgvInput).EndInit();
+            ((System.ComponentModel.ISupportInitialize)dgvGiaoNhan).EndInit();
+            ((System.ComponentModel.ISupportInitialize)dgvSearch).EndInit();
+            ((System.ComponentModel.ISupportInitialize)dgvChatAll).EndInit();
+            panel1.ResumeLayout(false);
+            panel1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)dgvTask).EndInit();
+            ((System.ComponentModel.ISupportInitialize)dgvChatPrivate).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -755,12 +932,10 @@
         private DataGridViewTextBoxColumn dataGridViewTextBoxColumn1;
         private DataGridViewTextBoxColumn SID1;
         private Label label1;
-        private TextBox txtSearchSID;
+        private TextBox txtSearch;
         private Label label2;
         private Label label3;
-        private ListBox lstResults;
         private Button btnExport;
-        private Button btnClearAll;
         private Label label4;
         private DataGridView DataGST1;
         private DataGridViewTextBoxColumn dataGridViewTextBoxColumn2;
@@ -792,13 +967,30 @@
         private DataGridView DataSHMDT3;
         private DataGridViewTextBoxColumn dataGridViewTextBoxColumn24;
         private DataGridViewTextBoxColumn dataGridViewTextBoxColumn25;
-        private UC_Chat uC_Chat1;
-        private GroupBox groupBox1;
-        private Button btnRestore;
-        private Button btnLoadHistory;
-        private Button btnBackupNow;
-        private Button btnBackToPresent;
-        private Panel pnTaskContainer;
-        private UC_TaskBoard uC_TaskBoard1;
+        private DataGridView dgvSearch;
+        private DataGridView dgvGiaoNhan;
+        private DataGridView dgvChatAll;
+        private TextBox txtNguoiNhan;
+        private TextBox txtNguoiGui;
+        private RadioButton radXanhDuong;
+        private RadioButton radXanhLa;
+        private RadioButton radDo;
+        private RadioButton radDen;
+        private RadioButton radKhac;
+        private Button btnGui;
+        private DataGridView dgvInput;
+        private TextBox txtCarrier;
+        private RadioButton radPCD;
+        private RadioButton radNuocTieu;
+        private ComboBox cboLine;
+        private Panel panel1;
+        private ComboBox cboKhuVuc;
+        private TextBox txtTaskSID;
+        private DataGridView dgvTask;
+        private TextBox txtChatContent;
+        private ComboBox cboChatTarget;
+        private DataGridView dgvChatPrivate;
+        private Button btnChatSend;
+        private Button btnClearData;
     }
 }
