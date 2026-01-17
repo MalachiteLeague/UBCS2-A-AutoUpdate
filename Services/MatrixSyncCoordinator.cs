@@ -90,6 +90,15 @@ namespace UBCS2_A.Services
 
         private void Firebase_OnItemDeleted(object sender, FirebaseDeleteEventArgs e)
         {
+            // [FIX] Thêm logic xử lý xóa toàn bộ bảng (ALL)
+            if (e.TargetId == "ALL" || e.TargetId == _nodeName || (e.RootNode == _nodeName && string.IsNullOrEmpty(e.TargetId)))
+            {
+                Console.WriteLine($"[MATRIX-SYNC] 🧹 Server đã DELETE bảng {_nodeName}!");
+                // Gọi hàm LoadData với list rỗng để xóa sạch Grid
+                _matrix.LoadData(new List<CotDuLieuModel>());
+                return;
+            }
+
             if (e.RootNode != _nodeName) return;
 
             // Nếu nhận được tín hiệu xóa Key "Col_100"

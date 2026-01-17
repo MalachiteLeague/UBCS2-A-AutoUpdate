@@ -138,8 +138,8 @@ namespace UBCS2_A.Services
 
         private void Firebase_OnItemDeleted(object sender, FirebaseDeleteEventArgs e)
         {
-            // Bắt sự kiện DELETE node cha
-            if (e.TargetId == _nodeName || (e.RootNode == _nodeName && string.IsNullOrEmpty(e.TargetId)))
+            // [FIX] Thêm điều kiện e.TargetId == "ALL" để bắt đúng tín hiệu từ FirebaseService khi xóa node cha
+            if (e.TargetId == "ALL" || e.TargetId == _nodeName || (e.RootNode == _nodeName && string.IsNullOrEmpty(e.TargetId)))
             {
                 Console.WriteLine($"[TASK-SYNC] 🧹 Server đã DELETE bảng {_nodeName}!");
                 ClearAllLocalData();

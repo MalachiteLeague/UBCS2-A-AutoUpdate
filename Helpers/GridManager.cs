@@ -54,6 +54,8 @@ namespace UBCS2_A.Helpers
             _dgv.CellValuePushed += Dgv_CellValuePushed;
             _dgv.CellFormatting += Dgv_CellFormatting;
             _dgv.KeyDown += Dgv_KeyDown;
+            // [THÊM DÒNG NÀY] Đăng ký sự kiện tự vẽ
+            _dgv.CellPainting += Dgv_CellPainting;
         }
 
         // --- CÁC HÀM VIRTUAL (ĐỂ CON GHI ĐÈ) ---
@@ -204,6 +206,29 @@ namespace UBCS2_A.Helpers
                 _dgv.FirstDisplayedScrollingRowIndex = foundIndex;
                 _dgv.Rows[foundIndex].Selected = true;
             }));
+        }
+        private void Dgv_CellPainting(object sender, DataGridViewCellPaintingEventArgs e)
+        {
+            if (e.RowIndex >= 0 && e.ColumnIndex >= 0)
+            {
+                if ((e.State & DataGridViewElementStates.Selected) == DataGridViewElementStates.Selected)
+                {
+                    // [FIX QUAN TRỌNG] Ép màu chữ khi chọn về giống màu bình thường (thường là Đen)
+                    // Nếu không có dòng này, nó sẽ lấy DefaultCellStyle.SelectionForeColor (mặc định là Trắng)
+                    e.CellStyle.SelectionForeColor = e.CellStyle.ForeColor;
+
+                    // 1. Vẽ nội dung (Bỏ nền xanh mặc định)
+                    e.Paint(e.ClipBounds, DataGridViewPaintParts.All & ~DataGridViewPaintParts.SelectionBackground);
+
+                    // 2. Vẽ lớp phủ trong suốt
+                    using (Brush overlay = new SolidBrush(Color.FromArgb(50, 0, 120, 215)))
+                    {
+                        e.Graphics.FillRectangle(overlay, e.CellBounds);
+                    }
+
+                    e.Handled = true;
+                }
+            }
         }
 
         public List<T> GetAllData() { lock (_lock) { return _dataSnapshot.ToList(); } }

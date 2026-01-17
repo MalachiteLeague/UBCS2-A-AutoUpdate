@@ -117,6 +117,8 @@ namespace UBCS2_A.Helpers
             _dgv.CellValuePushed += Dgv_CellValuePushed;
             _dgv.CellFormatting += Dgv_CellFormatting;
             _dgv.CellClick += Dgv_CellClick;
+            // [THÊM DÒNG NÀY]
+            _dgv.CellPainting += Dgv_CellPainting;
             Console.WriteLine("[MATRIX-MGR] 🛠️ Grid Setup Complete.");
         }
 
@@ -477,6 +479,28 @@ namespace UBCS2_A.Helpers
                 return $"\"{input}\"";
             }
             return input;
+        }
+        private void Dgv_CellPainting(object sender, DataGridViewCellPaintingEventArgs e)
+        {
+            if (e.RowIndex >= 0 && e.ColumnIndex >= 0)
+            {
+                if ((e.State & DataGridViewElementStates.Selected) == DataGridViewElementStates.Selected)
+                {
+                    // [FIX QUAN TRỌNG] Ép màu chữ khi chọn về màu gốc
+                    e.CellStyle.SelectionForeColor = e.CellStyle.ForeColor;
+
+                    // 1. Vẽ nội dung (Trừ nền xanh)
+                    e.Paint(e.ClipBounds, DataGridViewPaintParts.All & ~DataGridViewPaintParts.SelectionBackground);
+
+                    // 2. Vẽ lớp phủ trong suốt
+                    using (Brush overlay = new SolidBrush(Color.FromArgb(50, 0, 120, 215)))
+                    {
+                        e.Graphics.FillRectangle(overlay, e.CellBounds);
+                    }
+
+                    e.Handled = true;
+                }
+            }
         }
 
         private void CheckAndExpandRows(int r) { if (r - HEADER_ROWS >= _currentSidRows - 5) { _currentSidRows = Math.Min(_currentSidRows + 20, MAX_SID_ROWS); _dgv.RowCount = HEADER_ROWS + _currentSidRows; } }

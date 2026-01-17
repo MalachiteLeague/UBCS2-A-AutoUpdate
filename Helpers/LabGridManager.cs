@@ -6,22 +6,17 @@ using UBCS2_A.Models;
 
 namespace UBCS2_A.Helpers
 {
-    /// <summary>
-    /// [DERIVED CLASS] Grid chuyên dụng cho Xét nghiệm.
-    /// Kế thừa toàn bộ tính năng của GridManager và thêm logic Tô màu trùng.
-    /// </summary>
     public class LabGridManager : GridManager<MauXetNghiemModel>
     {
-        // Logic riêng: Danh sách các SID bị trùng
         private HashSet<string> _duplicateKeys = new HashSet<string>();
 
         public LabGridManager(DataGridView dgv, int maxRows) : base(dgv, maxRows)
         {
         }
 
-        // 1. GHI ĐÈ logic tính toán: Mỗi khi data đổi -> Tính lại danh sách trùng
         protected override void OnDataSnapshotChanged()
         {
+            // 1. Tính toán danh sách trùng (Logic cũ giữ nguyên)
             lock (_lock)
             {
                 _duplicateKeys.Clear();
@@ -29,7 +24,6 @@ namespace UBCS2_A.Helpers
 
                 foreach (var item in _dataSnapshot)
                 {
-                    // Logic đặc thù: Key chính là SID
                     string key = item.SID;
                     if (!string.IsNullOrEmpty(key))
                     {
@@ -43,11 +37,18 @@ namespace UBCS2_A.Helpers
                     if (kvp.Value > 1) _duplicateKeys.Add(kvp.Key);
                 }
             }
+
+            // 2. [FIX QUAN TRỌNG] Bắt buộc vẽ lại TOÀN BỘ lưới
+            // Lý do: Để ô cũ (đã vẽ trước đó) cũng nhận biết được là mình vừa bị trùng
+            if (_dgv.IsHandleCreated && !_dgv.IsDisposed)
+            {
+                _dgv.BeginInvoke(new Action(() => _dgv.Invalidate()));
+            }
         }
 
-        // 2. GHI ĐÈ logic hiển thị: Nếu trùng -> Tô Vàng
         protected override void OnCustomCellFormatting(DataGridViewCellFormattingEventArgs e, MauXetNghiemModel item, int rowIndex)
         {
+            // Logic tô màu (Giữ nguyên)
             string key = item.SID;
             if (!string.IsNullOrEmpty(key) && _duplicateKeys.Contains(key))
             {
