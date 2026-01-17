@@ -7,28 +7,28 @@ namespace UBCS2_A.Helpers
 {
     /// <summary>
     /// [MANAGER] Quản lý logic giao diện Giao Task.
-    /// Nhiệm vụ:
-    /// 1. Lắng nghe ô Textbox quét mã (txtTaskSID).
-    /// 2. Hiển thị Popup nhập liệu (TaskInputDialog).
-    /// 3. Gọi Context để lưu Task.
+    /// [REFACTOR] Tách Function: Event chỉ gọi hàm, Logic tách riêng.
     /// </summary>
     public class TaskManager
     {
-        private readonly TextBox _txtScan;   // Ô để quét mã
-        private readonly TaskContext _context; // Nơi xử lý dữ liệu
+        private readonly TextBox _txtScan;
+        private readonly TaskContext _context;
 
         public TaskManager(TextBox txtScan, TaskContext context)
         {
             _txtScan = txtScan;
             _context = context;
 
-            Console.WriteLine("[TASK-MGR] 🟢 Khởi tạo TaskManager.");
+            Console.WriteLine("[TASK-MGR] 🟢 Khởi tạo TaskManager (Refactored).");
             RegisterEvents();
         }
 
+        // =============================================================
+        // [1] KHU VỰC EVENT - CHỈ GỌI HÀM
+        // =============================================================
+
         private void RegisterEvents()
         {
-            // Bắt sự kiện phím Enter trên ô quét mã
             _txtScan.KeyDown += TxtScan_KeyDown;
         }
 
@@ -36,61 +36,79 @@ namespace UBCS2_A.Helpers
         {
             if (e.KeyCode == Keys.Enter)
             {
-                string sid = _txtScan.Text.Trim();
+                // Gọi hàm logic
+                ProcessScanInput(_txtScan.Text.Trim());
 
-                if (!string.IsNullOrEmpty(sid))
-                {
-                    Console.WriteLine($"[TASK-SCAN] 🔫 Đã quét SID: '{sid}'. Đang mở Popup...");
-
-                    // 1. Mở cửa sổ Popup
-                    ShowTaskDialog(sid);
-
-                    // 2. Clear ô quét và Focus lại để sẵn sàng cho mẫu tiếp theo
-                    _txtScan.Clear();
-                    _txtScan.Focus();
-                }
-
-                // Chặn tiếng "Beep" khó chịu của Windows khi nhấn Enter
                 e.SuppressKeyPress = true;
                 e.Handled = true;
             }
         }
 
-        private void ShowTaskDialog(string sid)
+        // =============================================================
+        // [2] KHU VỰC NGHIỆP VỤ (PRIVATE HELPERS)
+        // =============================================================
+
+        private void ProcessScanInput(string sid)
         {
-            // Tạo form popup và hiển thị
+            if (string.IsNullOrEmpty(sid)) return;
+
+            Console.WriteLine($"[TASK-SCAN] 🔫 Đã quét SID: '{sid}'. Đang mở Popup...");
+
+            // 1. Mở Popup và lấy dữ liệu
+            var taskData = GetUserTaskInput(sid);
+
+            // 2. Nếu người dùng nhập xong (có dữ liệu) -> Lưu
+            if (taskData != null)
+            {
+                CreateAndSaveTask(taskData);
+            }
+            else
+            {
+                Console.WriteLine("[TASK-ACTION] ❌ User hủy giao việc.");
+            }
+
+            // 3. Dọn dẹp ô nhập để sẵn sàng mã tiếp theo
+            ResetScanInput();
+        }
+
+        private TaskModel GetUserTaskInput(string sid)
+        {
             using (var dialog = new TaskInputDialog(sid))
             {
-                // ShowDialog: Hiện form và chặn không cho thao tác form chính đến khi đóng
                 var result = dialog.ShowDialog();
 
                 if (result == DialogResult.OK)
                 {
-                    // Người dùng bấm "Giao Việc"
                     string area = dialog.CboKhuVuc.SelectedItem?.ToString() ?? "Khác";
                     string content = dialog.TxtNoiDung.Text.Trim();
 
                     Console.WriteLine($"[TASK-ACTION] ✅ User xác nhận: Giao cho {area} - Nội dung: {content}");
 
-                    // Tạo Model Task
-                    var task = new TaskModel()
+                    return new TaskModel()
                     {
                         ThoiGian = DateTime.Now.ToString("HH:mm dd/MM"),
                         SID = sid,
                         KhuVucNhan = area,
                         NoiDung = content,
-                        TrangThai = 0 // Mới
+                        TrangThai = 0
                     };
-
-                    // Gọi Context để xử lý lưu trữ
-                    _context.AddNewTask(task);
-                }
-                else
-                {
-                    // Người dùng bấm "Hủy" hoặc tắt form
-                    Console.WriteLine("[TASK-ACTION] ❌ User hủy giao việc.");
                 }
             }
+            return null;
+        }
+
+        private void CreateAndSaveTask(TaskModel task)
+        {
+            if (task != null && _context != null)
+            {
+                _context.AddNewTask(task);
+            }
+        }
+
+        private void ResetScanInput()
+        {
+            _txtScan.Clear();
+            _txtScan.Focus();
         }
     }
 }
