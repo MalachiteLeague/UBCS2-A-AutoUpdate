@@ -11,6 +11,8 @@ namespace UBCS2_A
         // CẤU HÌNH HỆ THỐNG
         private const string FIREBASE_URL = "https://streamingub-default-rtdb.asia-southeast1.firebasedatabase.app/";
         private const string FIREBASE_SECRET = "APK7gK1JBKh2XUR4laAcTP8P9CxpZoZKBkZ9bm23";
+        // [THÊM DÒNG NÀY] Khai báo biến toàn cục để các file partial (Logistics, Task...) đều dùng được
+        private FirebaseService _firebaseService;
 
         public Form1()
         {
@@ -25,24 +27,24 @@ namespace UBCS2_A
             try
             {
                 // 1. KẾT NỐI SERVER
-                var firebase = new FirebaseService(FIREBASE_URL, FIREBASE_SECRET);
+                _firebaseService = new FirebaseService(FIREBASE_URL, FIREBASE_SECRET);
 
                 // 2. KHỞI TẠO TỪNG PHÂN HỆ
-                SetupLabSystem(firebase);       // Form1.Lab.cs
-                SetupLogisticsSystem(firebase); // Form1.Logistics.cs
-                SetupTaskSystem(firebase);      // Form1.Task.cs
-                SetupChatSystem(firebase);      // Form1.Chat.cs
+                SetupLabSystem(_firebaseService);       // Form1.Lab.cs
+                SetupLogisticsSystem(_firebaseService); // Form1.Logistics.cs
+                SetupTaskSystem(_firebaseService);      // Form1.Task.cs
+                SetupChatSystem(_firebaseService);      // Form1.Chat.cs
 
                 // 3. CÁC TÍNH NĂNG CHUNG
                 SetupAuthorization();           // Form1.Auth.cs
                 SetupSearchSystem();            // Form1.Search.cs
                                                 // Setup Backup nằm bên Form1.Backup.cs
                 SetupBackupSystem();
-                SetupSystemCommands(firebase);
+                SetupSystemCommands(_firebaseService);
 
                 // 4. KIỂM TRA CẬP NHẬT (QUAN TRỌNG: Chạy trước hoặc song song)
                 // [NEW] Thêm dòng này vào
-                _ = CheckForUpdatesAsync(firebase);
+                _ = CheckForUpdatesAsync(_firebaseService);
 
                 // 5. KÍCH HOẠT ĐỒNG BỘ (Chạy song song)
                 this.Text = "Quản lý Phòng Xét Nghiệm - Đang tải dữ liệu...";

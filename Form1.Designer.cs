@@ -85,8 +85,6 @@
             radDen = new RadioButton();
             radKhac = new RadioButton();
             btnGui = new Button();
-            txtNguoiNhan = new TextBox();
-            txtNguoiGui = new TextBox();
             dgvGiaoNhan = new DataGridView();
             txtSearch = new TextBox();
             label3 = new Label();
@@ -102,6 +100,8 @@
             dgvChatPrivate = new DataGridView();
             btnChatSend = new Button();
             btnClearData = new Button();
+            cboNguoiGui = new ComboBox();
+            cboNguoiNhan = new ComboBox();
             tabControl1.SuspendLayout();
             LuuMau.SuspendLayout();
             tabControl2.SuspendLayout();
@@ -581,6 +581,8 @@
             // 
             // tabPage2
             // 
+            tabPage2.Controls.Add(cboNguoiNhan);
+            tabPage2.Controls.Add(cboNguoiGui);
             tabPage2.Controls.Add(cboLine);
             tabPage2.Controls.Add(radNuocTieu);
             tabPage2.Controls.Add(dgvInput);
@@ -592,8 +594,6 @@
             tabPage2.Controls.Add(radDen);
             tabPage2.Controls.Add(radKhac);
             tabPage2.Controls.Add(btnGui);
-            tabPage2.Controls.Add(txtNguoiNhan);
-            tabPage2.Controls.Add(txtNguoiGui);
             tabPage2.Controls.Add(dgvGiaoNhan);
             tabPage2.Location = new Point(4, 24);
             tabPage2.Name = "tabPage2";
@@ -715,22 +715,6 @@
             btnGui.TabIndex = 4;
             btnGui.Text = "Gửi";
             btnGui.UseVisualStyleBackColor = true;
-            // 
-            // txtNguoiNhan
-            // 
-            txtNguoiNhan.Location = new Point(149, 15);
-            txtNguoiNhan.Name = "txtNguoiNhan";
-            txtNguoiNhan.Size = new Size(89, 23);
-            txtNguoiNhan.TabIndex = 2;
-            txtNguoiNhan.Text = "Người nhận";
-            // 
-            // txtNguoiGui
-            // 
-            txtNguoiGui.Location = new Point(34, 15);
-            txtNguoiGui.Name = "txtNguoiGui";
-            txtNguoiGui.Size = new Size(91, 23);
-            txtNguoiGui.TabIndex = 1;
-            txtNguoiGui.Text = "Người gửi";
             // 
             // dgvGiaoNhan
             // 
@@ -861,6 +845,22 @@
             btnClearData.Text = "Xóa dữ liệu";
             btnClearData.UseVisualStyleBackColor = true;
             // 
+            // cboNguoiGui
+            // 
+            cboNguoiGui.FormattingEnabled = true;
+            cboNguoiGui.Location = new Point(34, 14);
+            cboNguoiGui.Name = "cboNguoiGui";
+            cboNguoiGui.Size = new Size(91, 23);
+            cboNguoiGui.TabIndex = 15;
+            // 
+            // cboNguoiNhan
+            // 
+            cboNguoiNhan.FormattingEnabled = true;
+            cboNguoiNhan.Location = new Point(147, 15);
+            cboNguoiNhan.Name = "cboNguoiNhan";
+            cboNguoiNhan.Size = new Size(91, 23);
+            cboNguoiNhan.TabIndex = 15;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -970,8 +970,6 @@
         private DataGridView dgvSearch;
         private DataGridView dgvGiaoNhan;
         private DataGridView dgvChatAll;
-        private TextBox txtNguoiNhan;
-        private TextBox txtNguoiGui;
         private RadioButton radXanhDuong;
         private RadioButton radXanhLa;
         private RadioButton radDo;
@@ -992,5 +990,7 @@
         private DataGridView dgvChatPrivate;
         private Button btnChatSend;
         private Button btnClearData;
+        private ComboBox cboNguoiNhan;
+        private ComboBox cboNguoiGui;
     }
 }

@@ -1,28 +1,33 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
 using UBCS2_A.Models;
+using UBCS2_A.Services; // [QUAN TRỌNG] Cần namespace này để gọi Firebase
 
 namespace UBCS2_A.Helpers
 {
     /// <summary>
-    /// [MANAGER] Quản lý khu vực nhập liệu (Góc trái màn hình).
-    /// Nhiệm vụ: Xử lý quét mã, tự động thêm hậu tố (Suffix) và đóng gói gửi đi.
+    /// [MANAGER] Quản lý khu vực nhập liệu.
+    /// [UPDATE] Đã chuyển sang ComboBox và TỰ ĐỘNG LƯU tên mới lên Firebase.
     /// </summary>
     public class InputGroupManager
     {
-        // 1. Các tham chiếu UI
-        private readonly MatrixManager _matrixManager; // Cầu nối để gửi dữ liệu
+        private readonly MatrixManager _matrixManager;
+        private readonly FirebaseService _firebaseService; // [QUAN TRỌNG] Service để lưu dữ liệu
+
         private readonly DataGridView _dgvInput;
         private readonly Button _btnGui;
 
-        private readonly TextBox _txtNguoiGui;
-        private readonly TextBox _txtNguoiNhan;
+        // [UPDATE] Sử dụng ComboBox
+        private readonly ComboBox _cboNguoiGui;
+        private readonly ComboBox _cboNguoiNhan;
+
         private readonly TextBox _txtCarrier;
         private readonly ComboBox _cboLine;
 
-        // 2. Các Radio Button (Chọn loại mẫu)
+        // Radio Buttons
         private readonly RadioButton _radKhac;
         private readonly RadioButton _radDen;
         private readonly RadioButton _radDo;
@@ -31,19 +36,32 @@ namespace UBCS2_A.Helpers
         private readonly RadioButton _radNuocTieu;
         private readonly RadioButton _radPCD;
 
+        // Node lưu trữ trên Firebase
+        private const string NODE_SUGGEST_SENDER = "T_System/Suggestions/Senders";
+        private const string NODE_SUGGEST_RECEIVER = "T_System/Suggestions/Receivers";
+
+        // Cache để tránh load lại những tên đã biết
+        private HashSet<string> _cacheSenders = new HashSet<string>();
+        private HashSet<string> _cacheReceivers = new HashSet<string>();
+
         public InputGroupManager(
             MatrixManager matrixManager,
+            FirebaseService firebaseService, // [MỚI] Nhận service vào
             DataGridView dgvInput,
             Button btnGui,
-            TextBox txtNguoiGui, TextBox txtNguoiNhan, TextBox txtCarrier, ComboBox cboLine,
+            ComboBox cboNguoiGui, ComboBox cboNguoiNhan, // [MỚI] Nhận ComboBox
+            TextBox txtCarrier, ComboBox cboLine,
             RadioButton rKhac, RadioButton rDen, RadioButton rDo,
             RadioButton rXla, RadioButton rXdu, RadioButton rNt, RadioButton rPcd)
         {
             _matrixManager = matrixManager;
+            _firebaseService = firebaseService;
             _dgvInput = dgvInput;
             _btnGui = btnGui;
-            _txtNguoiGui = txtNguoiGui;
-            _txtNguoiNhan = txtNguoiNhan;
+
+            _cboNguoiGui = cboNguoiGui;
+            _cboNguoiNhan = cboNguoiNhan;
+
             _txtCarrier = txtCarrier;
             _cboLine = cboLine;
 
@@ -55,8 +73,12 @@ namespace UBCS2_A.Helpers
             _radNuocTieu = rNt;
             _radPCD = rPcd;
 
-            Console.WriteLine("[INPUT-MGR] 🟢 Khởi tạo Manager quản lý nhập liệu.");
+            Console.WriteLine("[INPUT-MGR] 🟢 Khởi tạo Manager nhập liệu (Auto-Sync).");
             SetupUI();
+
+            // Tải danh sách tên cũ từ Firebase về
+            LoadSuggestionsAsync();
+
             RegisterEvents();
         }
 
@@ -84,9 +106,61 @@ namespace UBCS2_A.Helpers
             colSID.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
             _dgvInput.Columns.Add(colSID);
 
-            _radKhac.Checked = true; // Mặc định
+            _radKhac.Checked = true;
 
-            Console.WriteLine("[INPUT-MGR] 🛠️ Đã cấu hình UI xong.");
+            // Cấu hình ComboBox gợi ý
+            SetupOneCombo(_cboNguoiGui);
+            SetupOneCombo(_cboNguoiNhan);
+        }
+
+        private void SetupOneCombo(ComboBox cbo)
+        {
+            cbo.Items.Clear();
+            cbo.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
+            cbo.AutoCompleteSource = AutoCompleteSource.ListItems;
+        }
+
+        // --- PHẦN ĐỒNG BỘ FIREBASE ---
+        private async void LoadSuggestionsAsync()
+        {
+            if (_firebaseService == null) return;
+            try
+            {
+                var senders = await _firebaseService.GetDataAsync<Dictionary<string, bool>>(NODE_SUGGEST_SENDER);
+                if (senders != null) UpdateComboList(_cboNguoiGui, _cacheSenders, senders.Keys.ToList());
+
+                var receivers = await _firebaseService.GetDataAsync<Dictionary<string, bool>>(NODE_SUGGEST_RECEIVER);
+                if (receivers != null) UpdateComboList(_cboNguoiNhan, _cacheReceivers, receivers.Keys.ToList());
+
+                // Lắng nghe realtime (nếu máy khác nhập thì máy này cũng thấy)
+                _firebaseService.OnDataChanged += Firebase_OnDataChanged;
+            }
+            catch (Exception ex) { Console.WriteLine($"[INPUT-SYNC-ERR] {ex.Message}"); }
+        }
+
+        private void UpdateComboList(ComboBox cbo, HashSet<string> cache, List<string> newItems)
+        {
+            if (cbo.InvokeRequired) { cbo.Invoke(new Action(() => UpdateComboList(cbo, cache, newItems))); return; }
+            foreach (var item in newItems)
+            {
+                if (!string.IsNullOrWhiteSpace(item) && !cache.Contains(item))
+                {
+                    cache.Add(item);
+                    cbo.Items.Add(item);
+                }
+            }
+        }
+
+        private void Firebase_OnDataChanged(object sender, FirebaseDataEventArgs e)
+        {
+            if (e.Path.Contains("Suggestions"))
+            {
+                string key = e.Key;
+                if (string.IsNullOrEmpty(key)) return;
+
+                if (e.Path.Contains("Senders")) UpdateComboList(_cboNguoiGui, _cacheSenders, new List<string> { key });
+                else if (e.Path.Contains("Receivers")) UpdateComboList(_cboNguoiNhan, _cacheReceivers, new List<string> { key });
+            }
         }
 
         private void RegisterEvents()
@@ -97,24 +171,19 @@ namespace UBCS2_A.Helpers
             _btnGui.Click += BtnGui_Click;
         }
 
-        // ==========================================================
-        // [QUAN TRỌNG] LOGIC HẬU TỐ (SUFFIX) ĐÃ CẬP NHẬT
-        // ==========================================================
         private string GetCurrentSuffix()
         {
-            if (_radDen.Checked) return " Đen";       // Có khoảng trắng phía trước
+            if (_radDen.Checked) return " Đen";
             if (_radDo.Checked) return " Đỏ";
             if (_radXanhLa.Checked) return " X.Lá";
             if (_radXanhDuong.Checked) return " X.Dương";
             if (_radNuocTieu.Checked) return " NT";
             if (_radPCD.Checked) return " PCĐ";
-
-            return ""; // _radKhac hoặc chưa chọn gì
+            return "";
         }
 
         private void DgvInput_CellEndEdit(object sender, DataGridViewCellEventArgs e)
         {
-            // Chỉ xử lý cột SID (Index 1)
             if (e.ColumnIndex == 1 && e.RowIndex >= 0)
             {
                 var cell = _dgvInput.Rows[e.RowIndex].Cells[1];
@@ -123,9 +192,6 @@ namespace UBCS2_A.Helpers
                 if (!string.IsNullOrEmpty(rawValue))
                 {
                     string suffix = GetCurrentSuffix();
-
-                    // Logic: Chỉ thêm nếu có hậu tố VÀ chuỗi chưa có hậu tố đó
-                    // Sử dụng StringComparison.OrdinalIgnoreCase để không phân biệt hoa thường
                     if (!string.IsNullOrEmpty(suffix) && !rawValue.EndsWith(suffix, StringComparison.OrdinalIgnoreCase))
                     {
                         string newValue = rawValue + suffix;
@@ -149,13 +215,15 @@ namespace UBCS2_A.Helpers
             try
             {
                 var newCol = new CotDuLieuModel();
-                // Format ngày giờ đầy đủ
                 newCol.GioGui = DateTime.Now.ToString("HH:mm dd/MM/yyyy");
-                newCol.NguoiGui = _txtNguoiGui.Text.Trim();
-                newCol.NguoiNhan = _txtNguoiNhan.Text.Trim();
+
+                // [UPDATE] Lấy Text từ ComboBox
+                newCol.NguoiGui = _cboNguoiGui.Text.Trim();
+                newCol.NguoiNhan = _cboNguoiNhan.Text.Trim();
+
                 newCol.Carrier = _txtCarrier.Text.Trim();
                 newCol.Line = _cboLine.SelectedItem?.ToString() ?? "";
-                newCol.Status = 0; // Mặc định là chưa nhận
+                newCol.Status = 0;
                 newCol.Sids = new List<string>();
 
                 foreach (DataGridViewRow row in _dgvInput.Rows)
@@ -163,30 +231,49 @@ namespace UBCS2_A.Helpers
                     if (!row.IsNewRow)
                     {
                         string sid = row.Cells[1].Value?.ToString();
-                        if (!string.IsNullOrWhiteSpace(sid))
-                        {
-                            newCol.Sids.Add(sid);
-                        }
+                        if (!string.IsNullOrWhiteSpace(sid)) newCol.Sids.Add(sid);
                     }
                 }
-
-                Console.WriteLine($"[INPUT-SEND] 📦 Đóng gói {newCol.Sids.Count} mẫu. Gửi sang Matrix...");
 
                 if (_matrixManager != null)
                 {
                     _matrixManager.AddNewColumn(newCol);
+
+                    // [QUAN TRỌNG] Lưu tên mới vào Firebase để lần sau gợi ý
+                    SaveSuggestionAsync(newCol.NguoiGui, NODE_SUGGEST_SENDER, _cacheSenders);
+                    SaveSuggestionAsync(newCol.NguoiNhan, NODE_SUGGEST_RECEIVER, _cacheReceivers);
+
                     ClearForm();
                 }
                 else
                 {
-                    Console.WriteLine("[INPUT-ERR] ❌ MatrixManager bị Null!");
                     MessageBox.Show("Lỗi hệ thống: Không tìm thấy MatrixManager.");
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[INPUT-ERR] ❌ Lỗi khi gửi: {ex.Message}");
                 MessageBox.Show("Có lỗi xảy ra: " + ex.Message);
+            }
+        }
+
+        // [HÀM MỚI] Thực hiện lưu lên Firebase
+        private async void SaveSuggestionAsync(string value, string nodePath, HashSet<string> cache)
+        {
+            if (string.IsNullOrWhiteSpace(value) || _firebaseService == null) return;
+
+            // Nếu tên này chưa có trong Cache -> Lưu lên Firebase
+            if (!cache.Contains(value))
+            {
+                try
+                {
+                    // Lưu dạng: T_System/Suggestions/Senders/BacSiTuan = true
+                    await _firebaseService.UpdateDataAsync($"{nodePath}/{value}", true);
+                    Console.WriteLine($"[INPUT-SAVE] 💾 Đã lưu gợi ý mới: {value}");
+
+                    // Add luôn vào cache để không lưu lại lần 2 trong phiên này
+                    cache.Add(value);
+                }
+                catch (Exception ex) { Console.WriteLine($"[INPUT-SAVE-ERR] {ex.Message}"); }
             }
         }
 
@@ -194,7 +281,7 @@ namespace UBCS2_A.Helpers
         {
             _txtCarrier.Clear();
             _dgvInput.Rows.Clear();
-            _radKhac.Checked = true; // Reset về Khác
+            _radKhac.Checked = true;
             _txtCarrier.Focus();
             Console.WriteLine("[INPUT-MGR] ✨ Đã dọn dẹp Form.");
         }

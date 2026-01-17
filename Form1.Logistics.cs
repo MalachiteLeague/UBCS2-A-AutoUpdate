@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Microsoft.Office.Interop.Excel;
 using UBCS2_A.Helpers;
 using UBCS2_A.Services;
 
@@ -24,8 +25,14 @@ namespace UBCS2_A
                 if (dgvInput != null && btnGui != null)
                 {
                     _inputGroupManager = new InputGroupManager(
-                        _matrixManager, dgvInput, btnGui,
-                        txtNguoiGui, txtNguoiNhan, txtCarrier, cboLine,
+                        _matrixManager,
+                        _firebaseService, // [THÊM DÒNG NÀY] Truyền service vào
+                        dgvInput,
+                        btnGui,
+                        cboNguoiGui,
+                        cboNguoiNhan,
+                        txtCarrier,
+                        cboLine,
                         radKhac, radDen, radDo, radXanhLa, radXanhDuong, radNuocTieu, radPCD
                     );
                 }
