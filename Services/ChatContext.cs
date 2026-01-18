@@ -10,8 +10,8 @@ namespace UBCS2_A.Services
 {
     /// <summary>
     /// [CONTEXT] Quản lý dữ liệu Chat.
-    /// - [UPDATE] ComboBox Nơi Gửi: Tách "Hành Chánh" thành "Hành Chánh T1" và "Hành Chánh T3".
-    /// - [KEEP] Logic đồng bộ và xử lý dữ liệu.
+    /// - [KEEP] Giữ nguyên logic ID tự tăng và SendMessageReal để không báo lỗi file khác.
+    /// - [KEEP] Logic ủy quyền lọc cho ChatManager.
     /// </summary>
     public class ChatContext : IDisposable
     {
@@ -41,9 +41,11 @@ namespace UBCS2_A.Services
             ComboBox cboTarget, TextBox txtContent, Button btnSend)
         {
             _invokeControl = dgvAll;
+
             // 1. Khởi tạo Manager quản lý 2 bảng
             _chatManager = new ChatManager(dgvAll, dgvPrivate);
-            // 2. [CẬP NHẬT] Cấu hình ComboBox chọn nơi gửi
+
+            // 2. Cấu hình ComboBox chọn nơi gửi
             cboTarget.Items.Clear();
             cboTarget.Items.AddRange(new string[] {
                 "Toàn viện",
@@ -51,9 +53,7 @@ namespace UBCS2_A.Services
                 "Sinh hóa T1",
                 "Miễn dịch T1",
                 "Huyết học T3",
-                "SH-MD T3", 
-                
-                // [ĐÃ TÁCH RIÊNG TẠI ĐÂY]
+                "SH-MD T3",
                 "Hành Chánh T1",
                 "Hành Chánh T3"
             });
@@ -62,17 +62,20 @@ namespace UBCS2_A.Services
             Console.WriteLine("[CHAT-CTX] 🛠️ Đã đăng ký UI Controls & Danh sách Nơi gửi.");
         }
 
+        // [QUAN TRỌNG] Hàm này được gọi từ Form1.Auth.cs
+        // Giữ nguyên logic ủy quyền cho ChatManager xử lý bộ lọc
         public void SetCurrentUserRole(string role)
         {
             if (_chatManager != null)
             {
+                Console.WriteLine($"[CHAT] 🔄 Đang cập nhật bộ lọc sang: {role}");
                 _chatManager.SetCurrentUserRole(role);
             }
         }
 
         #endregion
 
-        #region 2. GỬI TIN & CUỐN CHIẾU
+        #region 2. GỬI TIN & CUỐN CHIẾU (GIỮ NGUYÊN CODE GỐC)
 
         public void SendMessageReal(string senderName, string target, string content)
         {
@@ -93,6 +96,7 @@ namespace UBCS2_A.Services
 
                 string key = $"Chat_{msg.Id}";
                 _firebaseService.UpdateDataAsync($"{_nodeName}/{key}", msg);
+
                 if (_chatList.Count > MAX_MSG)
                 {
                     var oldMsg = _chatList[0];
@@ -108,7 +112,7 @@ namespace UBCS2_A.Services
         {
             if (_chatManager == null) return;
 
-            // [THAY ĐỔI DUY NHẤT] Tạo bản sao (Snapshot) trong lock để tránh lỗi Collection Modified khi UI đang vẽ
+            // Tạo bản sao (Snapshot) trong lock để tránh lỗi Collection Modified
             List<ChatModel> snapshot;
             lock (_lock)
             {
@@ -127,7 +131,7 @@ namespace UBCS2_A.Services
 
         #endregion
 
-        #region 3. ĐỒNG BỘ REALTIME (SYNC)
+        #region 3. ĐỒNG BỘ REALTIME (GIỮ NGUYÊN CODE GỐC)
 
         public void StartSync()
         {

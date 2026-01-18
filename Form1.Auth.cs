@@ -26,16 +26,28 @@ namespace UBCS2_A
             {
                 string role = cboKhuVuc.SelectedItem?.ToString() ?? "Khách";
 
-                // [GỌI THẲNG VÀO LAB CONTEXT] 
-                // Không cần qua trung gian nữa!
+                // 1. Cập nhật quyền cho bảng Lab (Xét nghiệm)
                 if (_context != null)
                 {
                     _context.SetUserRole(role);
                 }
 
-                // Cập nhật role cho Task (nếu có logic riêng)
-                // if (_taskContext != null) _taskContext.SetRole(role);
+                // 2. Cập nhật quyền cho Task (Giao việc) [QUAN TRỌNG: SỬA DÒNG NÀY]
+                if (_taskContext != null)
+                {
+                    // Hàm này sẽ cập nhật _currentRole trong TaskContext
+                    // Giúp Popup nhận diện đúng khu vực để hiện lên
+                    _taskContext.SetCurrentUserRole(role);
+                }
+                // 3. Cập nhật quyền cho Chat (Tin nhắn) - [FIX] Thêm mới
+                if (_chatContext != null)
+                {
+                    // Truyền thẳng tên vị trí cụ thể (VD: "Huyết học T1")
+                    // ChatContext sẽ tự động refresh lại bảng Chat Private
+                    _chatContext.SetCurrentUserRole(role);
+                }
             };
+
 
             // Mặc định chọn Khách
             cboKhuVuc.SelectedIndex = cboKhuVuc.Items.Count - 1;
